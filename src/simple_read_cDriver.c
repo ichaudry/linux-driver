@@ -11,7 +11,7 @@
 #include <linux/cdev.h>
 #include <linux/device.h>
 #include <linux/errno.h>
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 
 #include "simple_read_cDriver.h"
 
