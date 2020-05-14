@@ -7,5 +7,8 @@ PWD   := $(shell pwd)
 modules:
 		$(MAKE) -C $(KERNELDIR) M=$(PWD)
 
+app:
+		$ gcc app.c -o app
+
 clean:
-		@rm -fr *.o  *.a *.mod *.ko modules.order Module.symvers simple_char_driver.mod.c
+		@rm -fr .*.cmd *.o   *.a *.mod *.ko modules.order Module.symvers simple_read_cDriver.mod.c app

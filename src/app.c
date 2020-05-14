@@ -55,7 +55,7 @@ void set_vars(int fd)
 
 int main(int argc, char *argv[])
 {
-    char *file_name = "/dev/query";
+    char *file_name = "/dev/simpleRead";
     int fd;
     enum
     {
