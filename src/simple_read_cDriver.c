@@ -23,7 +23,7 @@ static dev_t dev;
 static struct cdev c_dev;
 static struct class *cl;
 static int position = 1, count = 3;
-char * buffer = "Hello from the driver";
+char buffer[64] = "Hello from the driver";
 
 static int my_open(struct inode *i, struct file *f);
 static int my_close(struct inode *i, struct file *f);
@@ -120,10 +120,11 @@ static long my_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
     switch (cmd)
     {
         case IOCTL_SIMPLE_READ:
-            q.position = position;
-            q.count = count;
-            q.buffer= buffer;
-            if (copy_to_user((ioctl_arg_t *)arg, &q, sizeof(ioctl_arg_t)))
+            //q.position = position;
+            //q.count = count;
+
+            //q.buffer= buffer;
+            if (copy_to_user((char *)arg, buffer, 10))
             {
                 return -EACCES;
             }

@@ -10,20 +10,20 @@
 
 void simple_read(int fd)
 {
-    ioctl_arg_t q;
+    //ioctl_arg_t q;
 
-    q.buffer= malloc(1024);
+    char * uBuffer= malloc(1024);
 
-    if (ioctl(fd, IOCTL_SIMPLE_READ, &q) == -1)
+    if (ioctl(fd, IOCTL_SIMPLE_READ, uBuffer) == -1)
     {
         perror("query_apps ioctl get");
     }
     else
     {
-        printf("The read:\n%s", q.buffer);
+        printf("The read: %s \n",uBuffer);
     }
 
-    free(q.buffer);
+    free(uBuffer);
 }
 
 void simple_write(int fd)
