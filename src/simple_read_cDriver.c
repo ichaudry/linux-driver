@@ -96,15 +96,17 @@ static int my_close(struct inode *i, struct file *f)
     return 0;
 }
 
-ssize_t read(struct file *filep, char *buff, size_t count, loff_t *offp)
+ssize_t my_read(struct file *filep, char *buff, size_t count, loff_t *offp)
 {
     printk("The %s function was invoked",__FUNCTION__);
+    return 0;
 }
 
 
-ssize_t write(struct file *filep, const char *buff, size_t count, loff_t *offp)
+ssize_t my_write(struct file *filep, const char *buff, size_t count, loff_t *offp)
 {
     printk("The %s function was invoked",__FUNCTION__);
+    return 0;
 }
 
 
