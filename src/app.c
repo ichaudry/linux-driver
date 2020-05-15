@@ -7,47 +7,43 @@
 
 #include "simple_read_cDriver.h"
 
-void get_vars(int fd)
+void simple_read(int fd)
 {
-    query_arg_t q;
+    ioctl_arg_t q;
 
-    if (ioctl(fd, QUERY_GET_VARIABLES, &q) == -1)
+    q.buffer= malloc(1024);
+
+    if (ioctl(fd, IOCTL_SIMPLE_READ, &q) == -1)
     {
         perror("query_apps ioctl get");
     }
     else
     {
-        printf("Status : %d\n", q.status);
-        printf("Dignity: %d\n", q.dignity);
-        printf("Ego    : %d\n", q.ego);
+        printf("The read:\n%s", q.buffer);
     }
+
+    free(q.buffer);
 }
-void clr_vars(int fd)
-{
-    if (ioctl(fd, QUERY_CLR_VARIABLES) == -1)
-    {
-        perror("query_apps ioctl clr");
-    }
-}
-void set_vars(int fd)
+
+void simple_write(int fd)
 {
     int v;
-    query_arg_t q;
+    ioctl_arg_t q;
 
-    printf("Enter Status: ");
+    printf("Enter position: ");
     scanf("%d", &v);
     getchar();
-    q.status = v;
-    printf("Enter Dignity: ");
+    q.position = v;
+    printf("Enter count: ");
     scanf("%d", &v);
     getchar();
-    q.dignity = v;
+    q.count = v;
     printf("Enter Ego: ");
     scanf("%d", &v);
     getchar();
     q.ego = v;
 
-    if (ioctl(fd, QUERY_SET_VARIABLES, &q) == -1)
+    if (ioctl(fd, IOCTL_SIMPLE_WRITE, &q) == -1)
     {
         perror("query_apps ioctl set");
     }
@@ -57,59 +53,45 @@ int main(int argc, char *argv[])
 {
     char *file_name = "/dev/simpleRead";
     int fd;
+    
     enum
     {
-        e_get,
-        e_clr,
-        e_set
-    } option;
+        s_read,
+        s_write
+    } ioctl_option;
 
-    if (argc == 1)
+   if (argc == 2)
     {
-        option = e_get;
-    }
-    else if (argc == 2)
-    {
-        if (strcmp(argv[1], "-g") == 0)
+        if (strcmp(argv[1], "-r") == 0)
         {
-            option = e_get;
+            ioctl_option = s_read;
         }
-        else if (strcmp(argv[1], "-c") == 0)
+        else if (strcmp(argv[1], "-w") == 0)
         {
-            option = e_clr;
-        }
-        else if (strcmp(argv[1], "-s") == 0)
-        {
-            option = e_set;
-        }
-        else
-        {
-            fprintf(stderr, "Usage: %s [-g | -c | -s]\n", argv[0]);
-            return 1;
-        }
+            ioctl_option= s_write;
+        } 
     }
     else
     {
-        fprintf(stderr, "Usage: %s [-g | -c | -s]\n", argv[0]);
+        fprintf(stderr, "Usage: %s [-r | -w ]\n", argv[0]);
         return 1;
     }
+
+    //Open file for read and write
     fd = open(file_name, O_RDWR);
     if (fd == -1)
     {
-        perror("query_apps open");
+        perror("simple_read_app open");
         return 2;
     }
 
-    switch (option)
+    switch (ioctl_option)
     {
-        case e_get:
-            get_vars(fd);
+        case s_read:
+            simple_read(fd);
             break;
-        case e_clr:
-            clr_vars(fd);
-            break;
-        case e_set:
-            set_vars(fd);
+        case s_write:
+            simple_write(fd);
             break;
         default:
             break;

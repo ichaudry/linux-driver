@@ -1,9 +1,6 @@
 //
 // Created by ibraheem on 5/13/20.
 //
-
-
-
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/version.h>
@@ -18,62 +15,31 @@
 #define FIRST_MINOR 0
 #define MINOR_CNT 1
 
+// https://www.oreilly.com/library/view/linux-device-drivers/0596000081/ch03s08.html
+// https://www.oreilly.com/library/view/linux-device-drivers/0596005903/ch03.html
+
+
 static dev_t dev;
 static struct cdev c_dev;
 static struct class *cl;
-static int status = 1, dignity = 3, ego = 5;
+static int position = 1, count = 3;
+char * buffer = "Hello from the driver";
 
-static int my_open(struct inode *i, struct file *f)
-{
-    return 0;
-}
-static int my_close(struct inode *i, struct file *f)
-{
-    return 0;
-}
+static int my_open(struct inode *i, struct file *f);
+static int my_close(struct inode *i, struct file *f);
+ssize_t read(struct file *filep, char _ _user *buff, size_t count, loff_t *offp);
+ssize_t write(struct file *filep, const char _ _user *buff, size_t count, loff_t *offp);
+static long my_ioctl(struct file *f, unsigned int cmd, unsigned long arg);
 
-static long my_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
-{
-    query_arg_t q;
-
-    switch (cmd)
-    {
-        case QUERY_GET_VARIABLES:
-            q.status = status;
-            q.dignity = dignity;
-            q.ego = ego;
-            if (copy_to_user((query_arg_t *)arg, &q, sizeof(query_arg_t)))
-            {
-                return -EACCES;
-            }
-            break;
-        case QUERY_CLR_VARIABLES:
-            status = 0;
-            dignity = 0;
-            ego = 0;
-            break;
-        case QUERY_SET_VARIABLES:
-            if (copy_from_user(&q, (query_arg_t *)arg, sizeof(query_arg_t)))
-            {
-                return -EACCES;
-            }
-            status = q.status;
-            dignity = q.dignity;
-            ego = q.ego;
-            break;
-        default:
-            return -EINVAL;
-    }
-
-    return 0;
-}
-
-static struct file_operations query_fops =
+static struct file_operations simple_read_fops =
         {
                 .owner = THIS_MODULE,
                 .open = my_open,
                 .release = my_close,
-                .unlocked_ioctl = my_ioctl
+                .ioctl = my_ioctl,
+                .llseek = my_llseek,
+                .read = my_read,
+                .write = my_write,
         };
 
 static int __init simple_read_cDriver_init(void)
@@ -87,7 +53,7 @@ static int __init simple_read_cDriver_init(void)
         return ret;
     }
 
-    cdev_init(&c_dev, &query_fops);
+    cdev_init(&c_dev, &simple_read_fops);
 
     if ((ret = cdev_add(&c_dev, dev, MINOR_CNT)) < 0)
     {
@@ -117,6 +83,63 @@ static void __exit simple_read_cDriver_exit(void)
     class_destroy(cl);
     cdev_del(&c_dev);
     unregister_chrdev_region(dev, MINOR_CNT);
+}
+
+static int my_open(struct inode *i, struct file *f)
+{
+    printk("The %s function was invoked",__FUNCTION__);
+    return 0;
+}
+static int my_close(struct inode *i, struct file *f)
+{
+    printk("The %s function was invoked",__FUNCTION__);
+    return 0;
+}
+
+ssize_t read(struct file *filep, char _ _user *buff, size_t count, loff_t *offp)
+{
+    printk("The %s function was invoked",__FUNCTION__);
+}
+
+
+ssize_t write(struct file *filep, const char _ _user *buff, size_t count, loff_t *offp)
+{
+    printk("The %s function was invoked",__FUNCTION__);
+}
+
+
+static long my_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
+{
+    printk("The %s function was invoked",__FUNCTION__);
+    ioctl_arg_t q;
+
+    switch (cmd)
+    {
+        case IOCTL_SIMPLE_READ:
+            q.position = position;
+            q.count = count;
+            q.buffer= buffer;
+            if (copy_to_user((ioctl_arg_t *)arg, &q, sizeof(ioctl_arg_t)))
+            {
+                return -EACCES;
+            }
+            break;
+
+        case IOCTL_SIMPLE_WRITE:
+            if (copy_from_user(&q, (ioctl_arg_t *)arg, sizeof(ioctl_arg_t)))
+            {
+                return -EACCES;
+            }
+            position = q.position;
+            count = q.count;
+            // copy_from_user(&buffer,q.buffer,strlen(q.buffer));
+            break;
+
+        default:
+            return -EINVAL;
+    }
+
+    return 0;
 }
 
 module_init(simple_read_cDriver_init);

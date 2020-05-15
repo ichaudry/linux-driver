@@ -8,11 +8,13 @@
 
 typedef struct
 {
-    int status, dignity, ego;
-} query_arg_t;
+    int position;
+    int count;
+    char * buffer;
+} ioctl_arg_t;
 
-#define QUERY_GET_VARIABLES _IOR('q', 1, query_arg_t *)
-#define QUERY_CLR_VARIABLES _IO('q', 2)
-#define QUERY_SET_VARIABLES _IOW('q', 3, query_arg_t *)
+#define IOCTL_SIMPLE_READ _IOR('q', 1, ioctl_arg_t *)
+// #define QUERY_CLR_VARIABLES _IO('q', 2)
+#define IOCTL_SIMPLE_WRITE _IOW('q', 3, ioctl_arg_t *)
 
 #endif //LINUX_DRIVER_SIMPLE_READ_CDRIVER_H
