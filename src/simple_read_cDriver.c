@@ -27,8 +27,8 @@ char * buffer = "Hello from the driver";
 
 static int my_open(struct inode *i, struct file *f);
 static int my_close(struct inode *i, struct file *f);
-ssize_t read(struct file *filep, char _ _user *buff, size_t count, loff_t *offp);
-ssize_t write(struct file *filep, const char _ _user *buff, size_t count, loff_t *offp);
+ssize_t my_read(struct file *filep, char * buff, size_t count, loff_t *offp);
+ssize_t my_write(struct file *filep, const char *buff, size_t count, loff_t *offp);
 static long my_ioctl(struct file *f, unsigned int cmd, unsigned long arg);
 
 static struct file_operations simple_read_fops =
@@ -36,8 +36,8 @@ static struct file_operations simple_read_fops =
                 .owner = THIS_MODULE,
                 .open = my_open,
                 .release = my_close,
-                .ioctl = my_ioctl,
-                .llseek = my_llseek,
+                .unlocked_ioctl = my_ioctl,
+                // .llseek = my_llseek,
                 .read = my_read,
                 .write = my_write,
         };
@@ -96,13 +96,13 @@ static int my_close(struct inode *i, struct file *f)
     return 0;
 }
 
-ssize_t read(struct file *filep, char _ _user *buff, size_t count, loff_t *offp)
+ssize_t read(struct file *filep, char *buff, size_t count, loff_t *offp)
 {
     printk("The %s function was invoked",__FUNCTION__);
 }
 
 
-ssize_t write(struct file *filep, const char _ _user *buff, size_t count, loff_t *offp)
+ssize_t write(struct file *filep, const char *buff, size_t count, loff_t *offp)
 {
     printk("The %s function was invoked",__FUNCTION__);
 }
