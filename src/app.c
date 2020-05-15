@@ -3,6 +3,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
+#include <stdlib.h>
 #include <sys/ioctl.h>
 
 #include "simple_read_cDriver.h"
@@ -38,10 +39,10 @@ void simple_write(int fd)
     scanf("%d", &v);
     getchar();
     q.count = v;
-    printf("Enter Ego: ");
-    scanf("%d", &v);
-    getchar();
-    q.ego = v;
+    // printf("Enter Ego: ");
+    // scanf("%d", &v);
+    // getchar();
+    // q.ego = v;
 
     if (ioctl(fd, IOCTL_SIMPLE_WRITE, &q) == -1)
     {
