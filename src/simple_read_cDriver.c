@@ -112,8 +112,10 @@ ssize_t my_write(struct file *filep, const char *buff, size_t count, loff_t *off
 
 static long my_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
 {
-    printk("The %s function was invoked",__FUNCTION__);
+ 
     ioctl_arg_t q;
+
+    printk("The %s function was invoked",__FUNCTION__);
 
     switch (cmd)
     {
