@@ -34,7 +34,6 @@ static struct file_operations simple_read_fops =
                 .open = my_open,
                 .release = my_close,
                 .unlocked_ioctl = my_ioctl,
-                .llseek = my_llseek,
                 .read = my_read,
                 .write = my_write,
         };
@@ -103,6 +102,7 @@ ssize_t my_read(struct file *filep, char *buff, size_t count, loff_t *offp)
 ssize_t my_write(struct file *filep, const char *buff, size_t count, loff_t *offp)
 {
     printk("The %s function was invoked",__FUNCTION__);
+    copy_from_user(filep,buff,count);
     return 0;
 }
 
