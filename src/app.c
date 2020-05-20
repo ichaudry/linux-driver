@@ -10,7 +10,7 @@
 
 void simple_read(int fd)
 {
-    //ioctl_arg_t q;
+    ioctl_arg_t q;
 
     char * uBuffer= malloc(1024);
 
@@ -26,39 +26,16 @@ void simple_read(int fd)
     free(uBuffer);
 }
 
-void simple_write(int fd)
-{
-    int v;
-    ioctl_arg_t q;
-
-    printf("Enter position: ");
-    scanf("%d", &v);
-    getchar();
-    q.position = v;
-    printf("Enter count: ");
-    scanf("%d", &v);
-    getchar();
-    q.count = v;
-    // printf("Enter Ego: ");
-    // scanf("%d", &v);
-    // getchar();
-    // q.ego = v;
-
-    if (ioctl(fd, IOCTL_SIMPLE_WRITE, &q) == -1)
-    {
-        perror("query_apps ioctl set");
-    }
-}
 
 int main(int argc, char *argv[])
 {
     char *file_name = "/dev/simpleRead";
     int fd;
     
+    //Allow for more ioctl options in future e.g. write etc
     enum
     {
-        s_read,
-        s_write
+        s_read
     } ioctl_option;
 
    if (argc == 2)
@@ -67,14 +44,15 @@ int main(int argc, char *argv[])
         {
             ioctl_option = s_read;
         }
-        else if (strcmp(argv[1], "-w") == 0)
+        else 
         {
-            ioctl_option= s_write;
-        } 
+            fprintf(stderr, "Usage: %s [-r ]\n", argv[0]);
+            return 1;
+        }
     }
     else
     {
-        fprintf(stderr, "Usage: %s [-r | -w ]\n", argv[0]);
+        fprintf(stderr, "Usage: %s [-r ]\n", argv[0]);
         return 1;
     }
 
@@ -86,13 +64,11 @@ int main(int argc, char *argv[])
         return 2;
     }
 
+    //One case for read but more can be added later as enum ioctl args is expanded
     switch (ioctl_option)
     {
         case s_read:
             simple_read(fd);
-            break;
-        case s_write:
-            simple_write(fd);
             break;
         default:
             break;

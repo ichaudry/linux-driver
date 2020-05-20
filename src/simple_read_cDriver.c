@@ -15,9 +15,6 @@
 #define FIRST_MINOR 0
 #define MINOR_CNT 1
 
-// https://www.oreilly.com/library/view/linux-device-drivers/0596000081/ch03s08.html
-// https://www.oreilly.com/library/view/linux-device-drivers/0596005903/ch03.html
-
 
 static dev_t dev;
 static struct cdev c_dev;
@@ -37,7 +34,7 @@ static struct file_operations simple_read_fops =
                 .open = my_open,
                 .release = my_close,
                 .unlocked_ioctl = my_ioctl,
-                // .llseek = my_llseek,
+                .llseek = my_llseek,
                 .read = my_read,
                 .write = my_write,
         };
@@ -120,24 +117,11 @@ static long my_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
     switch (cmd)
     {
         case IOCTL_SIMPLE_READ:
-            //q.position = position;
-            //q.count = count;
-
-            //q.buffer= buffer;
+            
             if (copy_to_user((char *)arg, buffer, 10))
             {
                 return -EACCES;
             }
-            break;
-
-        case IOCTL_SIMPLE_WRITE:
-            if (copy_from_user(&q, (ioctl_arg_t *)arg, sizeof(ioctl_arg_t)))
-            {
-                return -EACCES;
-            }
-            position = q.position;
-            count = q.count;
-            // copy_from_user(&buffer,q.buffer,strlen(q.buffer));
             break;
 
         default:
