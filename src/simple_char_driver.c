@@ -100,7 +100,7 @@ static int __init myModule_start (void)
     printk(KERN_INFO "My module has started. Hello world\n");
 
     //Test message
-    strncpy(message, "Hello world.",1023)
+    strncpy(message, "Hello world.",1023);
     num_bytes= strlen(message);
 
 
