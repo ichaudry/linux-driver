@@ -26,6 +26,8 @@ void ioctl_read(int fd)
 
 int ioctl_messageSize(int fd)
 {
+
+    printf("The function %s is called",__FUNCTION__);
     int messageSze;
 
     if (ioctl(fd, IOCTL_FILESIZE, &messageSze) == -1)
@@ -80,7 +82,7 @@ printf("Command Options:\nread: reads the message from the device\nwrite: writes
             unsigned int bytesRead;
             int nBytes = ioctl_messageSize(fd);
 
-            if(bytesRead=read(fd,uReadBuffer,10)<0){
+            if(bytesRead=read(fd,uReadBuffer,nBytes)<0){
                 perror("read: ");
             }
             printf("The following message is read from the device file using read:\n%s\n",uReadBuffer);
