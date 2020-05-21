@@ -9,18 +9,19 @@
 
 #include "simple_char_driver.h"
 
-char uBuffer[1024];
+
 
 void ioctl_read(int fd)
 {
+    char uIoctlBuffer[1024];
 
-    if (ioctl(fd, IOCTL_READ, uBuffer) == -1)
+    if (ioctl(fd, IOCTL_READ, uIoctlBuffer) == -1)
     {
         perror("query_apps ioctl get");
     }
     else
     {
-        printf("The following message is read from the device file using IOCTL:\n%s\n",uBuffer);
+        printf("The following message is read from the device file using IOCTL:\n%s\n",uIoctlBuffer);
     }
 }
 
@@ -61,10 +62,11 @@ printf("Command Options:\nread: reads the message from the device\nwrite: writes
         }
 
         if(!strcasecmp(inputLine,"read\n")){
-            if(read(fd,uBuffer,50)<0){
+            char uReadBuffer[1024];
+            if(read(fd,uReadBuffer,50)<0){
                 perror("read: ");
             }
-            printf("The following message is read from the device file using read:\n%s\n",uBuffer);
+            printf("The following message is read from the device file using read:\n%s\n",uReadBuffer);
             free(inputLine);
             continue;
         }
