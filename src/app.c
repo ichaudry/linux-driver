@@ -24,6 +24,22 @@ void ioctl_read(int fd)
     }
 }
 
+int ioctl_messageSize(int fd)
+{
+    int messageSze;
+
+    if (ioctl(fd, IOCTL_FILESIZE, &messageSze) == -1)
+    {
+        perror("query_apps ioctl get");
+        return 0;
+    }
+    else
+    {
+        printf("The size of the message to read is:\n%d\n",messageSze);
+        return messageSze;
+    }
+}
+
 int main(int argc, char *argv[])
 {
     char *file_name = "/dev/myDevice";
@@ -62,6 +78,8 @@ printf("Command Options:\nread: reads the message from the device\nwrite: writes
         if(!strcasecmp(inputLine,"read\n")){
             char uReadBuffer[1024];
             unsigned int bytesRead;
+            int nBytes = ioctl_messageSize(fd);
+
             if(bytesRead=read(fd,uReadBuffer,10)<0){
                 perror("read: ");
             }

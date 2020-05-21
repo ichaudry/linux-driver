@@ -29,6 +29,12 @@ static long myDevice_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
                 return -EACCES;
             }
     }
+    else if(cmd == IOCTL_FILESIZE){
+        if (copy_to_user((int *)arg, &num_bytes, sizeof(int)))
+            {
+                return -EACCES;
+            }
+    }
     else{
         return -EINVAL;
     }

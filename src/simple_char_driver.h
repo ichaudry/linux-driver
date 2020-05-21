@@ -7,5 +7,6 @@
 #include <linux/ioctl.h>
 
 #define IOCTL_READ _IOR('q', 1, void *)
+#define IOCTL_FILESIZE _IOR('q',2,void *)
 
 #endif //LINUX_DRIVER_SIMPLE_CHAR_DRIVER_H
