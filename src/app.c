@@ -64,7 +64,7 @@ printf("Command Options:\nread: reads the message from the device\nwrite: writes
         if(!strcasecmp(inputLine,"read\n")){
             char uReadBuffer[1024];
             unsigned int bytesRead;
-            if(bytesRead=pread(fd,uReadBuffer,0,0)<0){
+            if(bytesRead=read(fd,uReadBuffer,0)<0){
                 perror("read: ");
             }
             printf("The following message is read from the device file using read:\n%s\n",uReadBuffer);
