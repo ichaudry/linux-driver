@@ -47,7 +47,7 @@ ssize_t myDevice_write (struct file * filep, const char __user * uInBuff, size_t
     printk("The %s function was invoked\n",__FUNCTION__);
 
     if(offp == NULL)  return -EINVAL;
-    if(*offp == NULL) return -EINVAL;
+    if(*offp >= 1023) return -EINVAL;
 
     while((bytes_write < nbytes) && (*offp < 1023)){
         get_user(message[*offp], &uInBuff[bytes_write]);
