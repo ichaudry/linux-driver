@@ -82,7 +82,7 @@ printf("Command Options:\nread: reads the message from the device\nwrite: writes
             unsigned int bytesRead;
             int nBytes = ioctl_messageSize(fd);
 
-            if(bytesRead=read(fd,uReadBuffer,nBytes)<0){
+            if(bytesRead=pread(fd,uReadBuffer,0)<0){
                 perror("read: ");
             }
             printf("The following message is read from the device file using read:\n%s\n",uReadBuffer);
