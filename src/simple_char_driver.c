@@ -1,6 +1,7 @@
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/fs.h>
+#include <asm/uaccess.h>
 
 
 //Keep track if device file already open
@@ -25,7 +26,7 @@ ssize_t myDevice_read(struct file * filep, char __user * uOutBuff, size_t nbytes
 
     while((bytes_read < nbytes) && (*offp < num_bytes))
     {
-        put__user(message[ *offp], uOutBuff[bytes_read]);
+        put_user(message[ *offp], uOutBuff[bytes_read]);
         *offp++;
         bytes_read++;
     }
