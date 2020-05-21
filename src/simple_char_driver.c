@@ -15,7 +15,7 @@ volatile static int is_open= 0;
 
 static char message[1024];
 int num_bytes=0;
-static int dev_num=0;
+// static int dev_num=0;
 
 ssize_t myDevice_read(struct file * filep, char __user * uOutBuff, size_t nbytes, loff_t * offp)
 {
@@ -125,11 +125,8 @@ static void __exit myModule_cleanup (void)
     /* 
 	 * Unregister the device 
 	 */
-	int ret = unregister_chrdev(Major, DEVICE_NAME);
-	if (ret < 0){
-		printk(KERN_ALERT "Error in unregister_chrdev: %d\n", ret);
-    }
-    
+	unregister_chrdev(Major, DEVICE_NAME);
+	
     printk("The %s function was invoked\n",__FUNCTION__);
     printk(KERN_INFO "My module says goodbye world\n");
     
