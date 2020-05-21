@@ -71,19 +71,19 @@ printf("Command Options:\nread: reads the message from the device\nwrite: writes
 
         if(!strcasecmp(inputLine, "write\n")){
             printf("Writing to the device file\n");
-            char * uWriteBuffer;
-            size_t uWriteBufferLength;
+            char * uWriteBuffer="Hello from user ibraheem";
+            size_t uWriteBufferLength= strlen(uWriteBuffer);
 
-            //Get data to write to device file
-            getline(&uWriteBuffer, &uWriteBufferLength,stdin);
+            // //Get data to write to device file
+            // getline(&uWriteBuffer, &uWriteBufferLength,stdin);
 
-            memcpy(&uBuffer,uWriteBuffer,uWriteBufferLength);
+            // memcpy(&uBuffer,uWriteBuffer,uWriteBufferLength);
 
-            if (write(fd, uBuffer, uWriteBufferLength) < 0) {
+            if (write(fd, uWriteBuffer, uWriteBufferLength) < 0) {
                 perror("write: ");
             }
             
-            free(uWriteBuffer);
+            // free(uWriteBuffer);
             free(inputLine);
             continue;
         }
