@@ -11,10 +11,11 @@ int num_bytes=0;
 
 ssize_t myDevice_read(struct file * filep, char __user * uOutBuff, size_t nbytes, loff_t * offp)
 {
-    printk("The %s function was invoked\n",__FUNCTION__);
-
     //Track number of bytes already read
     int bytes_read=0;
+
+    printk("The %s function was invoked\n",__FUNCTION__);
+
 
     //Catch null offp
     if(offp == NULL) return -EINVAL;
@@ -24,7 +25,7 @@ ssize_t myDevice_read(struct file * filep, char __user * uOutBuff, size_t nbytes
 
     while((bytes_read < nbytes) && (*offp < num_bytes))
     {
-        put_user(message[ *offp], uOutBuff[bytes_read]);
+        put__user(message[ *offp], uOutBuff[bytes_read]);
         *offp++;
         bytes_read++;
     }
@@ -35,7 +36,8 @@ ssize_t myDevice_read(struct file * filep, char __user * uOutBuff, size_t nbytes
 ssize_t myDevice_write (struct file * filep, const char __user * uInBuff, size_t nbytes, loff_t * offp)
 {
     printk("The %s function was invoked\n",__FUNCTION__);
-
+    printk(KERN_ALERT "Sorry, this operation isn't supported.\n");
+	return -EINVAL;
 
 }
 
@@ -50,7 +52,7 @@ int myDevice_open (struct inode * inodep, struct file * filep)
     //Check if device open
     if(is_open){
         printk(KERN_INFO "Error - the device is already open\n");
-        return -EBUSY
+        return -EBUSY;
     }
 
     is_open=1;
@@ -68,7 +70,7 @@ int myDevice_close (struct inode * inodep, struct file * filep)
     //Check if device open
     if(!is_open){
         printk(KERN_INFO "Error - the device wasn't opened\n");
-        return -EBUSY
+        return -EBUSY;
     }
 
     is_open=0;
@@ -102,7 +104,7 @@ static int __init myModule_start (void)
 
 
     //Registering character driver. Letting kernel pick device number
-    Major= register_chrdev(0,DEVICE_NAME ,fops);
+    Major= register_chrdev(0,DEVICE_NAME ,&fops);
 
     //Catch errors registering device
 	if (Major < 0) {
@@ -110,7 +112,7 @@ static int __init myModule_start (void)
 	  return Major;
 	}
 
-    printk(KERN_INFO "The simple char device major number is :%d\n",deviceNum);
+    printk(KERN_INFO "The simple char device major number is :%d\n",Major);
 
     return 0;
 }
@@ -118,15 +120,17 @@ static int __init myModule_start (void)
 
 static void __exit myModule_cleanup (void)
 {
-    printk("The %s function was invoked\n",__FUNCTION__);
-    printk(KERN_INFO "My module says goodbye world\n");
-    
     /* 
 	 * Unregister the device 
 	 */
 	int ret = unregister_chrdev(Major, DEVICE_NAME);
-	if (ret < 0)
+	if (ret < 0){
 		printk(KERN_ALERT "Error in unregister_chrdev: %d\n", ret);
+    }
+    
+    printk("The %s function was invoked\n",__FUNCTION__);
+    printk(KERN_INFO "My module says goodbye world\n");
+    
 }
 
 
