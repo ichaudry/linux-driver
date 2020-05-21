@@ -3,23 +3,24 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <strings.h>
+#include <string.h>
 #include <stdlib.h>
 #include <sys/ioctl.h>
 
 #include "simple_char_driver.h"
 
-char uReadBuffer[1024];
+char uBuffer[1024];
 
 void ioctl_read(int fd)
 {
 
-    if (ioctl(fd, IOCTL_READ, uReadBuffer) == -1)
+    if (ioctl(fd, IOCTL_READ, uBuffer) == -1)
     {
         perror("query_apps ioctl get");
     }
     else
     {
-        printf("The following message is read from the device file using IOCTL:\n%s\n",uReadBuffer);
+        printf("The following message is read from the device file using IOCTL:\n%s\n",uBuffer);
     }
 }
 
@@ -60,10 +61,10 @@ printf("Command Options:\nread: reads the message from the device\nwrite: writes
         }
 
         if(!strcasecmp(inputLine,"read\n")){
-            if(read(fd,uReadBuffer,50)<0){
+            if(read(fd,uBuffer,50)<0){
                 perror("read: ");
             }
-            printf("The following message is read from the device file using read:\n%s\n",uReadBuffer);
+            printf("The following message is read from the device file using read:\n%s\n",uBuffer);
             free(inputLine);
             continue;
         }
@@ -76,7 +77,9 @@ printf("Command Options:\nread: reads the message from the device\nwrite: writes
             //Get data to write to device file
             getline(&uWriteBuffer, &uWriteBufferLength,stdin);
 
-            if (write(fd, uWriteBuffer, uWriteBufferLength) < 0) {
+            memcpy(&uBuffer,uWriteBuffer,uWriteBufferLength);
+
+            if (write(fd, uBuffer, uWriteBufferLength) < 0) {
                 perror("write: ");
             }
             
