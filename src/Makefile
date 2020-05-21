@@ -1,14 +1,12 @@
-obj-m := simple_read_cDriver.o
+obj-m = simple_char_driver.o
 
-KERNELDIR ?= /lib/modules/$(shell uname -r)/build
-PWD   := $(shell pwd)
+KVERSION = $(shell uname -r)
 
-
-modules:
-		$(MAKE) -C $(KERNELDIR) M=$(PWD)
-
-app:
-		$ gcc app.c -o app
+all:
+		make -C /lib/modules/$(KVERSION)/build M=$(PWD) modules
 
 clean:
-		@rm -fr .*.cmd *.o   *.a *.mod *.ko modules.order Module.symvers simple_read_cDriver.mod.c app
+		make -C /lib/modules/$(KVERSION)/build M=$(PWD) clean
+
+app:
+		gcc app.c -o app

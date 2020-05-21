@@ -2,79 +2,137 @@
 #include <sys/types.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <strings.h>
 #include <string.h>
 #include <stdlib.h>
 #include <sys/ioctl.h>
 
-#include "simple_read_cDriver.h"
-
-void simple_read(int fd)
-{
-    ioctl_arg_t q;
-
-    char * uBuffer= malloc(1024);
-
-    if (ioctl(fd, IOCTL_SIMPLE_READ, uBuffer) == -1)
-    {
-        perror("query_apps ioctl get");
-    }
-    else
-    {
-        printf("The read: %s \n",uBuffer);
-    }
-
-    free(uBuffer);
-}
+#include "simple_char_driver.h"
 
 
 int main(int argc, char *argv[])
 {
-    char *file_name = "/dev/simpleRead";
+    char *file_name = "/dev/myDevice";
     int fd;
-    
-    //Allow for more ioctl options in future e.g. write etc
-    enum
-    {
-        s_read
-    } ioctl_option;
-
-   if (argc == 2)
-    {
-        if (strcmp(argv[1], "-r") == 0)
-        {
-            ioctl_option = s_read;
-        }
-        else 
-        {
-            fprintf(stderr, "Usage: %s [-r ]\n", argv[0]);
-            return 1;
-        }
-    }
-    else
-    {
-        fprintf(stderr, "Usage: %s [-r ]\n", argv[0]);
-        return 1;
-    }
 
     //Open file for read and write
     fd = open(file_name, O_RDWR);
     if (fd == -1)
     {
-        perror("simple_read_app open");
+        perror("myDevice open");
         return 2;
     }
 
-    //One case for read but more can be added later as enum ioctl args is expanded
-    switch (ioctl_option)
-    {
-        case s_read:
-            simple_read(fd);
+printf("Command Options:\nread: reads the message from the device\nwrite: writes message to the device\nioctl: using ioctl backdoor to commnicate with device and read message\n\n");
+
+    //Start command line utility to interact with the device file
+    while(1){
+        
+        printf("\n>>>");
+
+        //Get stdin
+        char * inputLine = NULL; 
+        size_t length = 0;
+
+        if(getline(&inputLine, &length,stdin)==-1){
+            perror("Error getting line from stdin\n");
+            exit(EXIT_FAILURE);
+        }
+
+        if(!strcasecmp(inputLine,"exit\n")){
+            printf("Exiting the program\n");
+            free(inputLine);
             break;
-        default:
-            break;
+        }
+
+        if(!strcasecmp(inputLine,"read\n")){
+            //Read buffer
+            char uReadBuffer[1024];
+           
+            //Get the number of bytes to read from device file using ioctl
+            int nBytes = ioctl_messageSize(fd);
+
+            //Check for errors 
+            if(pread(fd,uReadBuffer,nBytes,0)<0){
+                perror("read: ");
+            }
+
+            //Read to stdout
+            printf("The following message is read from the device file using read:\n%s\n",uReadBuffer);
+            
+            free(inputLine);
+            continue;
+        }
+
+        if(!strcasecmp(inputLine, "write\n")){
+            printf("Enter message to send to device file:\n");
+
+            //Write Buffer
+            char uWriteBuffer [128];
+
+            //Get message from user
+            fgets(uWriteBuffer,128,stdin);
+
+            //Set null terminator
+            uWriteBuffer[strlen(uWriteBuffer) -1] = '\0';
+
+            size_t uWriteBufferLength= strlen(uWriteBuffer);
+
+            //catch errors        
+            if (write(fd, uWriteBuffer, uWriteBufferLength) < 0) {
+                perror("write: ");
+            }
+            
+            free(inputLine);
+            continue;
+        }
+
+        if(!strcasecmp(inputLine,"ioctl\n")){
+            //Calling ioctl function for reading
+            ioctl_read(fd);
+            free(inputLine);
+            continue;
+        }
+
+        printf("Command not understood\n");
+    
+        free(inputLine);
     }
 
     close (fd);
 
     return 0;
+}
+
+
+void ioctl_read(int fd)
+{
+    char uIoctlBuffer[1024];
+
+    if (ioctl(fd, IOCTL_READ, uIoctlBuffer) == -1)
+    {
+        perror("query_apps ioctl get");
+    }
+    else
+    {
+        printf("The following message is read from the device file using IOCTL:\n%s\n",uIoctlBuffer);
+    }
+}
+
+int ioctl_messageSize(int fd)
+{
+
+    printf("The function %s is called",__FUNCTION__);
+    int messageSze;
+
+    if (ioctl(fd, IOCTL_FILESIZE, &messageSze) == -1)
+    {
+        perror("query_apps ioctl get");
+        return 0;
+    }
+    else
+    {
+        printf("The size of the message to read is:\n%d\n",messageSze);
+        return messageSze;
+    }
 }

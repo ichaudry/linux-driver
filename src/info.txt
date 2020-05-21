@@ -1,4 +1,0 @@
- the task of the read method is to copy data from the device to user space (using copy_to_user), 
- while the write method must copy data from user space to the device (using copy_from_user). 
- Each read or write system call requests transfer of a specific number of bytes, 
- but the driver is free to transfer less data—the exact rules are slightly different for reading and writing and are described later in this chapter.
