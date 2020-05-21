@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <sys/ioctl.h>
 
-#include "simple_read_cDriver.h"
+#include "simple_char_driver.h"
 
 void simple_read(int fd)
 {

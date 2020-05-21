@@ -7,3 +7,6 @@ all:
 
 clean:
 		make -C /lib/modules/$(KVERSION)/build M=$(PWD) clean
+
+app:
+		gcc app.c -o app
