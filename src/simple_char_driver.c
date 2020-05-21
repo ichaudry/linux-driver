@@ -18,7 +18,7 @@ static char message[1024];
 int num_bytes=0;
 
 
-static long my_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
+static long myDevice_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
 {
 
     printk("The %s function was invoked",__FUNCTION__);
