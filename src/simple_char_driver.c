@@ -62,10 +62,10 @@ ssize_t myDevice_read(struct file * filep, char __user * uOutBuff, size_t nbytes
 
 ssize_t myDevice_write (struct file * filep, const char __user * uInBuff, size_t nbytes, loff_t * offp)
 {
-
+    int bytes_write = 0;
 
     printk(KERN_INFO "This is the string recieved from the user: %s\n",uInBuff);
-    int bytes_write = 0;
+    
     printk("The %s function was invoked\n",__FUNCTION__);
 
     if(offp == NULL)  return -EINVAL;
