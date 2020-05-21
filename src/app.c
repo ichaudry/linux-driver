@@ -121,8 +121,6 @@ void ioctl_read(int fd)
 
 int ioctl_messageSize(int fd)
 {
-
-    printf("The function %s is called",__FUNCTION__);
     int messageSze;
 
     if (ioctl(fd, IOCTL_FILESIZE, &messageSze) == -1)
@@ -132,7 +130,6 @@ int ioctl_messageSize(int fd)
     }
     else
     {
-        printf("The size of the message to read is:\n%d\n",messageSze);
         return messageSze;
     }
 }
