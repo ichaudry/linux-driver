@@ -63,29 +63,28 @@ printf("Command Options:\nread: reads the message from the device\nwrite: writes
 
         if(!strcasecmp(inputLine,"read\n")){
             char uReadBuffer[1024];
-            if(read(fd,uReadBuffer,50)<0){
+            unsigned int bytesRead;
+            if(bytesRead=read(fd,uReadBuffer,128)<0){
                 perror("read: ");
             }
             printf("The following message is read from the device file using read:\n%s\n",uReadBuffer);
+            
+            printf("The bytes read are : %u\n",bytesRead);
             free(inputLine);
             continue;
         }
 
         if(!strcasecmp(inputLine, "write\n")){
-            printf("Writing to the device file\n");
-            char * uWriteBuffer="Hello from user ibraheem";
+            printf("Enter message to send to device file:\n");
+            char uWriteBuffer [128];
+            fgets(uWriteBuffer,128,stdin);
+            uWriteBuffer[strlen(uWriteBuffer) -1] = '\0';
+
             size_t uWriteBufferLength= strlen(uWriteBuffer);
-
-            // //Get data to write to device file
-            // getline(&uWriteBuffer, &uWriteBufferLength,stdin);
-
-            // memcpy(&uBuffer,uWriteBuffer,uWriteBufferLength);
-
             if (write(fd, uWriteBuffer, uWriteBufferLength) < 0) {
                 perror("write: ");
             }
             
-            // free(uWriteBuffer);
             free(inputLine);
             continue;
         }
