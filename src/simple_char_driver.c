@@ -127,7 +127,7 @@ struct file_operations fops = {
 	read: myDevice_read,
 	write: myDevice_write,
 	open: myDevice_open,
-    unlocked_ioctl=myDevice_ioctl,
+    unlocked_ioctl: myDevice_ioctl,
 	release: myDevice_close
 };
 
