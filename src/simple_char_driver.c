@@ -5,17 +5,42 @@
 #include "simple_char_driver.h"
 
 
-#define DEVICE_NAME "simpleCharDriver"	
+static int __init myModule_start (void)
+{
+    printk("The %s function was invoked\n",__FUNCTION__);
+    printk(KERN_INFO "My module has started. Hello world\n");
+
+    //Test message
+    strncpy(message, "Hello world.",1023);
+    num_bytes= strlen(message);
 
 
-//Major name assigned to our device driver
-static int Major;		
+    //Registering character driver. Letting kernel pick device number
+    Major= register_chrdev(0,DEVICE_NAME ,&fops);
 
-//Keep track if device file already open
-volatile static int is_open= 0;
+    //Catch errors registering device
+	if (Major < 0) {
+	  printk(KERN_ALERT "Registering char device failed with %d\n", Major);
+	  return Major;
+	}
 
-static char message[1024];
-int num_bytes=0;
+    printk(KERN_INFO "The simple char device major number is :%d\n",Major);
+
+    return 0;
+}
+
+
+static void __exit myModule_cleanup (void)
+{
+    /* 
+	 * Unregister the device 
+	 */
+	unregister_chrdev(Major, DEVICE_NAME);
+	
+    printk("The %s function was invoked\n",__FUNCTION__);
+    printk(KERN_INFO "My module says goodbye world\n");
+    
+}
 
 
 static long myDevice_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
@@ -24,12 +49,14 @@ static long myDevice_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
     printk("The %s function was invoked",__FUNCTION__);
 
     if(cmd == IOCTL_READ){
+        //Copy message to user buffer
         if (copy_to_user((char *)arg, &message, num_bytes))
             {
                 return -EACCES;
             }
     }
     else if(cmd == IOCTL_FILESIZE){
+        //copy file size to user buffer
         if (copy_to_user((int *)arg, &num_bytes, sizeof(int)))
             {
                 return -EACCES;
@@ -42,6 +69,9 @@ static long myDevice_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
     return 0;
 }
 
+/*
+*Called when file is read
+*/
 ssize_t myDevice_read(struct file * filep, char __user * uOutBuff, size_t nbytes, loff_t * offp)
 {
     //Track number of bytes already read
@@ -66,6 +96,11 @@ ssize_t myDevice_read(struct file * filep, char __user * uOutBuff, size_t nbytes
     return bytes_read;
 }
 
+
+
+/*
+*Called when file is written to
+*/
 ssize_t myDevice_write (struct file * filep, const char __user * uInBuff, size_t nbytes, loff_t * offp)
 {
     int bytes_write = 0;
@@ -125,52 +160,6 @@ int myDevice_close (struct inode * inodep, struct file * filep)
     module_put(THIS_MODULE);
     
     return 0;
-}
-
-
-struct file_operations fops = {
-	read: myDevice_read,
-	write: myDevice_write,
-	open: myDevice_open,
-    unlocked_ioctl: myDevice_ioctl,
-	release: myDevice_close
-};
-
-static int __init myModule_start (void)
-{
-    printk("The %s function was invoked\n",__FUNCTION__);
-    printk(KERN_INFO "My module has started. Hello world\n");
-
-    //Test message
-    strncpy(message, "Hello world.",1023);
-    num_bytes= strlen(message);
-
-
-    //Registering character driver. Letting kernel pick device number
-    Major= register_chrdev(0,DEVICE_NAME ,&fops);
-
-    //Catch errors registering device
-	if (Major < 0) {
-	  printk(KERN_ALERT "Registering char device failed with %d\n", Major);
-	  return Major;
-	}
-
-    printk(KERN_INFO "The simple char device major number is :%d\n",Major);
-
-    return 0;
-}
-
-
-static void __exit myModule_cleanup (void)
-{
-    /* 
-	 * Unregister the device 
-	 */
-	unregister_chrdev(Major, DEVICE_NAME);
-	
-    printk("The %s function was invoked\n",__FUNCTION__);
-    printk(KERN_INFO "My module says goodbye world\n");
-    
 }
 
 

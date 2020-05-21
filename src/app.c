@@ -10,38 +10,6 @@
 #include "simple_char_driver.h"
 
 
-void ioctl_read(int fd)
-{
-    char uIoctlBuffer[1024];
-
-    if (ioctl(fd, IOCTL_READ, uIoctlBuffer) == -1)
-    {
-        perror("query_apps ioctl get");
-    }
-    else
-    {
-        printf("The following message is read from the device file using IOCTL:\n%s\n",uIoctlBuffer);
-    }
-}
-
-int ioctl_messageSize(int fd)
-{
-
-    printf("The function %s is called",__FUNCTION__);
-    int messageSze;
-
-    if (ioctl(fd, IOCTL_FILESIZE, &messageSze) == -1)
-    {
-        perror("query_apps ioctl get");
-        return 0;
-    }
-    else
-    {
-        printf("The size of the message to read is:\n%d\n",messageSze);
-        return messageSze;
-    }
-}
-
 int main(int argc, char *argv[])
 {
     char *file_name = "/dev/myDevice";
@@ -78,27 +46,39 @@ printf("Command Options:\nread: reads the message from the device\nwrite: writes
         }
 
         if(!strcasecmp(inputLine,"read\n")){
+            //Read buffer
             char uReadBuffer[1024];
-            unsigned int bytesRead;
+           
+            //Get the number of bytes to read from device file using ioctl
             int nBytes = ioctl_messageSize(fd);
 
-            if(bytesRead=pread(fd,uReadBuffer,nBytes,0)<0){
+            //Check for errors 
+            if(pread(fd,uReadBuffer,nBytes,0)<0){
                 perror("read: ");
             }
+
+            //Read to stdout
             printf("The following message is read from the device file using read:\n%s\n",uReadBuffer);
             
-            printf("The bytes read are : %u\n",bytesRead);
             free(inputLine);
             continue;
         }
 
         if(!strcasecmp(inputLine, "write\n")){
             printf("Enter message to send to device file:\n");
+
+            //Write Buffer
             char uWriteBuffer [128];
+
+            //Get message from user
             fgets(uWriteBuffer,128,stdin);
+
+            //Set null terminator
             uWriteBuffer[strlen(uWriteBuffer) -1] = '\0';
 
             size_t uWriteBufferLength= strlen(uWriteBuffer);
+
+            //catch errors        
             if (write(fd, uWriteBuffer, uWriteBufferLength) < 0) {
                 perror("write: ");
             }
@@ -108,7 +88,7 @@ printf("Command Options:\nread: reads the message from the device\nwrite: writes
         }
 
         if(!strcasecmp(inputLine,"ioctl\n")){
-            printf("Using iotcl to do the operation for read\n");
+            //Calling ioctl function for reading
             ioctl_read(fd);
             free(inputLine);
             continue;
@@ -122,4 +102,37 @@ printf("Command Options:\nread: reads the message from the device\nwrite: writes
     close (fd);
 
     return 0;
+}
+
+
+void ioctl_read(int fd)
+{
+    char uIoctlBuffer[1024];
+
+    if (ioctl(fd, IOCTL_READ, uIoctlBuffer) == -1)
+    {
+        perror("query_apps ioctl get");
+    }
+    else
+    {
+        printf("The following message is read from the device file using IOCTL:\n%s\n",uIoctlBuffer);
+    }
+}
+
+int ioctl_messageSize(int fd)
+{
+
+    printf("The function %s is called",__FUNCTION__);
+    int messageSze;
+
+    if (ioctl(fd, IOCTL_FILESIZE, &messageSze) == -1)
+    {
+        perror("query_apps ioctl get");
+        return 0;
+    }
+    else
+    {
+        printf("The size of the message to read is:\n%d\n",messageSze);
+        return messageSze;
+    }
 }
