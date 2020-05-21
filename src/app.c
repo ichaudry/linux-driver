@@ -10,7 +10,6 @@
 #include "simple_char_driver.h"
 
 
-
 void ioctl_read(int fd)
 {
     char uIoctlBuffer[1024];
@@ -24,7 +23,6 @@ void ioctl_read(int fd)
         printf("The following message is read from the device file using IOCTL:\n%s\n",uIoctlBuffer);
     }
 }
-
 
 int main(int argc, char *argv[])
 {
@@ -64,7 +62,7 @@ printf("Command Options:\nread: reads the message from the device\nwrite: writes
         if(!strcasecmp(inputLine,"read\n")){
             char uReadBuffer[1024];
             unsigned int bytesRead;
-            if(bytesRead=read(fd,uReadBuffer,0)<0){
+            if(bytesRead=read(fd,uReadBuffer,10)<0){
                 perror("read: ");
             }
             printf("The following message is read from the device file using read:\n%s\n",uReadBuffer);
@@ -95,7 +93,6 @@ printf("Command Options:\nread: reads the message from the device\nwrite: writes
             free(inputLine);
             continue;
         }
-
 
         printf("Command not understood\n");
     
