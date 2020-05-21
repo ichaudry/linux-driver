@@ -43,10 +43,20 @@ ssize_t myDevice_read(struct file * filep, char __user * uOutBuff, size_t nbytes
 
 ssize_t myDevice_write (struct file * filep, const char __user * uInBuff, size_t nbytes, loff_t * offp)
 {
+    int bytes_write = 0;
     printk("The %s function was invoked\n",__FUNCTION__);
-    printk(KERN_ALERT "Sorry, this operation isn't supported.\n");
-	return -EINVAL;
 
+    if(offset == NULL)  return -EINVAL;
+    if(*offset == NULL) return -EINVAL;
+
+    while((bytes_write < nbytes) && (*offset < 1023)){
+        get_user(message[*offset], &uInBuff[bytes_write]);
+        *offp = *offp + 1;
+        bytes_write++;
+    }
+    printk(KERN_INFO "(%s)\n",message);
+
+    return bytes_write;
 }
 
 
