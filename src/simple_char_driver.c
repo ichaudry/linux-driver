@@ -23,18 +23,14 @@ static long myDevice_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
 
     printk("The %s function was invoked",__FUNCTION__);
 
-    switch (cmd)
-    {
-        case IOCTL_SIMPLE_READ:
-            
-            if (copy_to_user((char *)arg, &message, num_bytes))
+    if(cmd == IOCTL_READ){
+        if (copy_to_user((char *)arg, &message, num_bytes))
             {
                 return -EACCES;
             }
-            break;
-
-        default:
-            return -EINVAL;
+    }
+    else{
+        return -EINVAL;
     }
 
     return 0;
@@ -66,6 +62,9 @@ ssize_t myDevice_read(struct file * filep, char __user * uOutBuff, size_t nbytes
 
 ssize_t myDevice_write (struct file * filep, const char __user * uInBuff, size_t nbytes, loff_t * offp)
 {
+
+
+    printk(KERN_INFO "This is the string recieved from the user: %s\n",uInBuff);
     int bytes_write = 0;
     printk("The %s function was invoked\n",__FUNCTION__);
 

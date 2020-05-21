@@ -1,0 +1,1 @@
+cmd_/home/ibraheem/Documents/Github/linux-driver/src/simple_char_driver.mod := { echo  /home/ibraheem/Documents/Github/linux-driver/src/simple_char_driver.o; echo; } > /home/ibraheem/Documents/Github/linux-driver/src/simple_char_driver.mod
