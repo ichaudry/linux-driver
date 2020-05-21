@@ -4,11 +4,18 @@
 #include <asm/uaccess.h>
 
 
+#define DEVICE_NAME "simpleCharDriver"	
+
+
+//Major name assigned to our device driver
+static int Major;		
+
 //Keep track if device file already open
 volatile static int is_open= 0;
 
 static char message[1024];
 int num_bytes=0;
+static int dev_num=0;
 
 ssize_t myDevice_read(struct file * filep, char __user * uOutBuff, size_t nbytes, loff_t * offp)
 {
@@ -26,8 +33,8 @@ ssize_t myDevice_read(struct file * filep, char __user * uOutBuff, size_t nbytes
 
     while((bytes_read < nbytes) && (*offp < num_bytes))
     {
-        put_user(message[ *offp], uOutBuff[bytes_read]);
-        *offp++;
+        put_user(message[ *offp], &uOutBuff[bytes_read]);
+        *offp= *offp + 1;
         bytes_read++;
     }
 
@@ -79,12 +86,6 @@ int myDevice_close (struct inode * inodep, struct file * filep)
     
     return 0;
 }
-
-#define DEVICE_NAME "simpleCharDriver"	
-
-
-//Major name assigned to our device driver
-static int Major;		
 
 
 struct file_operations fops = {
