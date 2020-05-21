@@ -56,6 +56,8 @@ ssize_t myDevice_write (struct file * filep, const char __user * uInBuff, size_t
     }
     printk(KERN_INFO "(%s)\n",message);
 
+    num_bytes=bytes_write;
+
     return bytes_write;
 }
 
