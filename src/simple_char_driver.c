@@ -49,7 +49,7 @@ ssize_t myDevice_write (struct file * filep, const char __user * uInBuff, size_t
     if(offp == NULL)  return -EINVAL;
     if(*offp == NULL) return -EINVAL;
 
-    while((bytes_write < nbytes) && (*offset < 1023)){
+    while((bytes_write < nbytes) && (*offp < 1023)){
         get_user(message[*offp], &uInBuff[bytes_write]);
         *offp = *offp + 1;
         bytes_write++;
