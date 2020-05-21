@@ -1,7 +1,8 @@
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/fs.h>
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
+#include "simple_char_driver.h"
 
 
 #define DEVICE_NAME "simpleCharDriver"	
@@ -15,7 +16,29 @@ volatile static int is_open= 0;
 
 static char message[1024];
 int num_bytes=0;
-// static int dev_num=0;
+
+
+static long my_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
+{
+
+    printk("The %s function was invoked",__FUNCTION__);
+
+    switch (cmd)
+    {
+        case IOCTL_SIMPLE_READ:
+            
+            if (copy_to_user((char *)arg, &message, num_bytes))
+            {
+                return -EACCES;
+            }
+            break;
+
+        default:
+            return -EINVAL;
+    }
+
+    return 0;
+}
 
 ssize_t myDevice_read(struct file * filep, char __user * uOutBuff, size_t nbytes, loff_t * offp)
 {
@@ -104,6 +127,7 @@ struct file_operations fops = {
 	read: myDevice_read,
 	write: myDevice_write,
 	open: myDevice_open,
+    unlocked_ioctl=myDevice_ioctl,
 	release: myDevice_close
 };
 
