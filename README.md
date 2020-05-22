@@ -38,10 +38,7 @@ git clone <repistory-url>
     ```
     
 #### App Commands to interact with device driver
-- write
-    This takes a message from the user and write it to the device file
-- read
-    This read message from the device file
-- ioctl
-    This uses the ioctl backdoor to read message from the device file
+- write : This takes a message from the user and write it to the device file
+- read  : This read message from the device file
+- ioctl : This uses the ioctl backdoor to read message from the device file
 instead of using the read file operation
