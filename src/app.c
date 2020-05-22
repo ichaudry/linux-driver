@@ -9,7 +9,6 @@
 
 #include "simple_char_driver.h"
 
-
 int main(int argc, char *argv[])
 {
     char *file_name = "/dev/myDevice";
@@ -39,12 +38,18 @@ printf("Command Options:\nread: reads the message from the device\nwrite: writes
             exit(EXIT_FAILURE);
         }
 
+        /*
+        * Exit program
+        */
         if(!strcasecmp(inputLine,"exit\n")){
             printf("Exiting the program\n");
             free(inputLine);
             break;
         }
 
+        /*
+        * Read from message from device file
+        */
         if(!strcasecmp(inputLine,"read\n")){
             //Read buffer
             char uReadBuffer[1024];
@@ -64,6 +69,9 @@ printf("Command Options:\nread: reads the message from the device\nwrite: writes
             continue;
         }
 
+        /*
+        * Write message to device file
+        */
         if(!strcasecmp(inputLine, "write\n")){
             printf("Enter message to send to device file:\n");
 
@@ -87,6 +95,9 @@ printf("Command Options:\nread: reads the message from the device\nwrite: writes
             continue;
         }
 
+        /*
+        * Read message using ioctl backdoor
+        */
         if(!strcasecmp(inputLine,"ioctl\n")){
             //Calling ioctl function for reading
             ioctl_read(fd);
@@ -104,7 +115,9 @@ printf("Command Options:\nread: reads the message from the device\nwrite: writes
     return 0;
 }
 
-
+/*
+*Using ioctl backdoor to read message from the device file
+*/
 void ioctl_read(int fd)
 {
     char uIoctlBuffer[1024];
@@ -119,6 +132,9 @@ void ioctl_read(int fd)
     }
 }
 
+/*
+*Using ioctl backdoor to get message size from the device
+*/
 int ioctl_messageSize(int fd)
 {
     int messageSze;

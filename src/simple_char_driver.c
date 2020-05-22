@@ -6,14 +6,16 @@
 
 #define DEVICE_NAME "simpleCharDriver"	
 
-
 //Major name assigned to our device driver
 static int Major;		
 
 //Keep track if device file already open
 volatile static int is_open= 0;
 
+//Message device reads and writes
 static char message[1024];
+
+//Message size tracker
 int num_bytes=0;
 
 /*
@@ -77,7 +79,9 @@ static void __exit myModule_cleanup (void)
     
 }
 
-
+/*
+*Ioctl backdoor used to read message from device and get message size
+*/
 static long myDevice_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
 {
 
@@ -130,7 +134,6 @@ ssize_t myDevice_read(struct file * filep, char __user * uOutBuff, size_t nbytes
 
     return bytes_read;
 }
-
 
 
 /*

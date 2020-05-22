@@ -18,5 +18,4 @@ void ioctl_read(int fd);
 //Get size of device file message using ioctl
 int ioctl_messageSize(int fd);
 
-
 #endif //LINUX_DRIVER_SIMPLE_CHAR_DRIVER_H
